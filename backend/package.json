@@ -1,0 +1,31 @@
+{
+  "name": "exoface-be",
+  "version": "1.0.0",
+  "description": "Backend für die Exoface Anwendung Verbindung Frontend mit dem API-Anschluss zu Exoscale.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/McBenjihood/Exoscale-Interface-BE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/McBenjihood/Exoscale-Interface-BE/issues"
+  },
+  "homepage": "https://github.com/McBenjihood/Exoscale-Interface-BE#readme",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
