@@ -2,13 +2,13 @@
 
 
 
-Backend für die Exoface Anwendung Verbindung frontend mit demAPI anschluss Exoscale.
+Backend für die Exoface Anwendung Verbindung Frontend mit dem API-Anschluss zu Exoscale.
 
 
 
 ### Issues:
 
-read into Exoscale-api doc 
+read into Exoscale-api doc
 
 Project Setup
 
@@ -33,10 +33,4 @@ F005 create VM reset function
 F006 create SSH-Key deposit function
 
 F008 create fetch VMs with Label function
-
-
-
-
-
-
 
