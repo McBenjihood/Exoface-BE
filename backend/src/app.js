@@ -1,53 +1,23 @@
 const express = require('express');
-const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../exoscale-api-openapi-source.json'), 'utf8')
+);
 
-// Swagger Konfiguration
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Exoface API',
-      version: '1.0.0',
-      description: 'Backend für die Exoface Anwendung (Exoscale-Schnittstelle)',
-    },
-    servers: [
-      {
-        url: `http://localhost:${PORT}`,
-      },
-    ],
-  },
-  // Pfad zu den Dateien, die die Dokumentation (Kommentare) enthalten
-  apis: ['./src/routes/*.js', './src/app.js'], 
-};
+swaggerDocument.servers = [
+  {
+    url: 'http://localhost:4010',
+    description: 'Local Prism Mock Server'
+  }
+];
 
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Beispiel für eine dokumentierte Route
-/**
- * @openapi
- * /api/status:
- *   get:
- *     summary: Gibt den Serverstatus zurück
- *     responses:
- *       200:
- *         description: Server läuft einwandfrei
- */
-app.get('/api/status', (req, res) => {
-  res.json({ success: true, message: "Das Backend läuft!" });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-  console.log(`Dokumentation verfügbar unter: http://localhost:${PORT}/api-docs`);
+app.listen(3000, () => {
+  console.log('Server läuft auf Port 3000');
 });
