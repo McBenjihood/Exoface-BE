@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 
 const swaggerDocument = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../exoscale-api-openapi-source.json'), 'utf8')
+  fs.readFileSync(path.join(__dirname, './exoscale-api-openapi-source.json'), 'utf8')
 );
 
 swaggerDocument.servers = [
