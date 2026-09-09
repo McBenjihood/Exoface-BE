@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      # Da deine SQL-Datei bereits "CREATE DATABASE" enthält,
+      # wird kein MYSQL_DATABASE zwingend benötigt, aber das Root-Passwort ist hier definiert:
+      MYSQL_ROOT_PASSWORD: hallodudummesding123?
+    ports:
+      # Port-Mapping: PC-Port : Container-Port
+      - "3306:3306"
+    volumes:
+      # 1. Deine SQL-Datei wird in den speziellen Ordner gemappt,
+      #    der beim ERSTEN Start automatisch alle Skripte ausführt!
+      - ./ExofaceDB.sql:/docker-entrypoint-initdb.d/init.sql
+      # 2. Speichert die Daten dauerhaft auf deinem PC, damit sie nach einem Neustart nicht verloren gehen
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
