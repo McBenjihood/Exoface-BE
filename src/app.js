@@ -22,7 +22,3 @@ app.listen(3000, () => {
   console.log('Server läuft auf Port 3000');
 });
 
-app.post('/api/login', async (req, res) =>{
-  const { email, password } = req.body;
-  
-});

@@ -1,9 +1,9 @@
 {
   "name": "exoface-be",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node src/app.js",
     "dev": "concurrently \"nodemon src/app.js\" \"prism mock exoscale-api-openapi-source.json --dynamic -p 4010\""
   },
   "dependencies": {
