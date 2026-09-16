@@ -1,7 +1,9 @@
-const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const fs = require('fs');
-const path = require('path');
+import api_routes from '@/routes/index';
+
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
 
 const app = express();
 
@@ -17,6 +19,7 @@ swaggerDocument.servers = [
 ];
 
 app.use('/api/exoscale/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api', api_routes)
 
 app.listen(3000, () => {
     console.log('Server läuft auf Port 3000');
