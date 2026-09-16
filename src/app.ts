@@ -1,4 +1,7 @@
-import api_routes from '@/routes/index';
+import "reflect-metadata"
+import api_routes from '@/router/index';
+import {AppDataSource} from '@/models/datasource'
+import {RequestLoggerMiddleware} from '@/middleware/middleware'
 
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -18,8 +21,10 @@ swaggerDocument.servers = [
     }
 ];
 
+app.use(RequestLoggerMiddleware);
 app.use('/api/exoscale/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', api_routes)
+AppDataSource.initialize()
 
 app.listen(3000, () => {
     console.log('Server läuft auf Port 3000');
