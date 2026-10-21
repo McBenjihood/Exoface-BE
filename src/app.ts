@@ -1,7 +1,8 @@
 import "reflect-metadata"
-import api_routes from '@/router/index';
-import {AppDataSource} from '@/models/datasource'
-import {RequestLoggerMiddleware} from '@/middleware/middleware'
+import api_routes from '@/router/index.js';
+import {AppDataSource} from '@/models/datasource.js'
+import {RequestLoggerMiddleware} from '@/middleware/middleware.js'
+import "@/config/passport.js";
 
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -9,6 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 const app = express();
+
+app.use(express.json());
 
 const swaggerDocument = JSON.parse(
     fs.readFileSync(path.join('exoscale-api-openapi-source.json'), 'utf8')
