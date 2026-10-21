@@ -47,12 +47,11 @@ CREATE TABLE UserModule (
                             FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE
 );
 
-CREATE TABLE provisionalUser (
+CREATE TABLE ProvisionalUser (
                           userId INT AUTO_INCREMENT PRIMARY KEY,
                           name VARCHAR(50),
                           surname VARCHAR(50),
                           email VARCHAR(50) UNIQUE,
                           role ENUM('teacher', 'student') NOT NULL,
-                          classId INT NULL,
-                          FOREIGN KEY (classId) REFERENCES Class(classId) ON DELETE SET NULL
+                          class VARCHAR(10)
 );
