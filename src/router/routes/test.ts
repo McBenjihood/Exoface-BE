@@ -1,7 +1,7 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
 import express from "express";
-import {createTeacher} from '@/services/TeacherService'
+import {createTeacher} from '@/services/TeacherService.js'
 
 const router = Router();
 

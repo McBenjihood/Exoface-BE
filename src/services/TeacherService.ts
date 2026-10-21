@@ -1,4 +1,4 @@
-import {AppDataSource} from '@/models/datasource'
+import {AppDataSource} from '@/models/datasource.js'
 import TeacherEntity from '@/models/entities/TeacherEntity.js'
 
 const TeacherRepository = AppDataSource.getRepository(TeacherEntity)
