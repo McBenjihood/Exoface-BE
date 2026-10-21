@@ -19,7 +19,4 @@ export default class UserEntity {
 
     @Column("varchar", { length: 50 })
     role: string;
-
-    @Column("boolean", { default: true })
-    enabled: boolean;
 }
