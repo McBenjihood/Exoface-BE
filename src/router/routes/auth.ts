@@ -5,8 +5,6 @@ import jwt from "jsonwebtoken";
 
 const router = Router();
 
-const issuer = "exoface.bbzwinf.ch"
-
 router.post("/login", (req: Request, res: Response, next) => {
     passport.authenticate("local", { session: false }, (err: Error | null, user: any, info: any) => {
         if (err) {
@@ -17,7 +15,7 @@ router.post("/login", (req: Request, res: Response, next) => {
         }
 
         const token = jwt.sign({
-                iss: issuer,
+                iss: process.env.JWT_ISSUER,
                 iat: Math.floor(Date.now() / 1000),
                 exp: Math.floor(Date.now() / 1000) + 3600,
                 sub: user.userId,
