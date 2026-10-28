@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
+import VmEntity from "@/models/entities/VmEntity.js";
+import UserModuleEntity from "@/models/entities/UserModuleEntity.js";
 
 @Entity({ name: "User" })
 export default class UserEntity {
@@ -20,6 +22,9 @@ export default class UserEntity {
     @Column("varchar", { length: 50 })
     role: string;
 
-    @Column("boolean", { default: true })
-    enabled: boolean;
+    @OneToMany(() => VmEntity, (vm) => vm.user)
+    vms!: VmEntity[];
+
+    @OneToMany(() => UserModuleEntity, (um) => um.user)
+    userModules!: UserModuleEntity[];
 }

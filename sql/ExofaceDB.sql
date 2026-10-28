@@ -13,7 +13,7 @@ CREATE TABLE User (
                       surname VARCHAR(50),
                       email VARCHAR(50) UNIQUE,
                       password VARCHAR(255),
-                      role ENUM('teacher', 'student') NOT NULL,
+                      role ENUM('teacher', 'student', 'admin') NOT NULL,
                       classId INT NULL,
                       FOREIGN KEY (classId) REFERENCES Class(classId) ON DELETE SET NULL
 );

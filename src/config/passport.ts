@@ -10,7 +10,7 @@ passport.use(
         async (email, password, done) => {
             try {
                 const userRepository = AppDataSource.getRepository(UserEntity);
-                const user = await userRepository.findOne({ where: { email } });
+                const user = await userRepository.findOneBy({email:email});
 
                 if (!user) {
                     console.log("User wurde in DB nicht gefunden!");
