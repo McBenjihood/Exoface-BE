@@ -2,7 +2,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import express from "express";
 import {createTeacher} from '@/services/TeacherService.js'
-import {sendWelcomeEmail} from  '@/services/EmailService.js'
+import {sendLoginEmail} from  '@/services/EmailService.js'
 
 const router = Router();
 
@@ -13,10 +13,10 @@ router.post('/create-teacher',express.json(), (req: Request, res: Response) => {
 
 router.get("/send-test", async (req: Request, res: Response) => {
     try {
-        await sendWelcomeEmail("example@gmail.com", "test");
+        await sendLoginEmail("example@gmail.com", "test", 123456);
 
         return res.status(200).json({
-            message: "Test-E-Mail wurde erfolgreich an Mailtrap gesendet!"
+            message: "Test-E-Mail wurde erfolgreich gesendet!"
         });
     } catch (error: any) {
         return res.status(500).json({ error: error.message });

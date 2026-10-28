@@ -1,6 +1,6 @@
 import { transporter } from "@/config/mailer.js";
 
-export async function sendWelcomeEmail(toEmail: string, userName: string) {
+export async function sendLoginEmail(toEmail: string, userName: string, OTP: number) {
     const info = await transporter.sendMail({
         from: `"Dein Name" <${process.env.SMTP_USER}>`,
         to: toEmail,
