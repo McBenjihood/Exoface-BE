@@ -1,10 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
+import ClassModuleEntity from "@/models/entities/ClassModuleEntity.js";
 
-@Entity('Class')
+@Entity({ name: 'Class'})
 export default class ClassEntity {
     @PrimaryGeneratedColumn({name: 'classId'})
-    classId: number;
+    classId!: number;
 
     @Column({name: 'name', type: 'varchar', length: 50})
-    name: string;
+    name!: string;
+
+    @OneToMany(() => ClassModuleEntity, (cm) => cm.class)
+    classModules!: ClassModuleEntity[];
 }

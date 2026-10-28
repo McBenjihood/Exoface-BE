@@ -5,26 +5,26 @@ export enum UserRole {
     STUDENT = 'student',
 }
 
-@Entity('provisionalUser')
+@Entity({name: 'provisionalUser'})
 export default class ProvisionalUserEntity {
     @PrimaryGeneratedColumn({name: 'userId'})
-    userId: number;
+    userId!: number;
 
     @Column({type: 'varchar', length: 50, nullable: true})
-    name: string;
+    name!: string;
 
     @Column({type: 'varchar', length: 50, nullable: true})
-    surname: string;
+    surname!: string;
 
     @Column({type: 'varchar', length: 50, unique: true, nullable: true})
-    email: string;
+    email!: string;
 
     @Column({
         type: 'enum',
         enum: UserRole,
     })
-    role: UserRole;
+    role!: UserRole;
 
     @Column({type: 'int', nullable: true})
-    classId: number | null;
+    classId!: number | null;
 }

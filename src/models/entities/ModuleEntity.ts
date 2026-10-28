@@ -1,21 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import ClassModuleEntity from "@/models/entities/ClassModuleEntity.js";
 import UserModuleEntity from "@/models/entities/UserModuleEntity.js";
 
-@Entity("Module")
+@Entity({name: "Module"})
 export default class ModuleEntity {
     @PrimaryGeneratedColumn({ name: "moduleId" })
-    moduleId: number;
+    moduleId!: number;
 
     @Column({ type: "varchar", length: 10, unique: true, nullable: true })
-    shortcut: string;
+    shortcut!: string;
 
     @Column({ type: "varchar", length: 100, nullable: true })
-    description: string;
+    description!: string;
 
     @OneToMany(() => ClassModuleEntity, (cm) => cm.module)
-    classModules: ClassModuleEntity[];
+    classModules!: ClassModuleEntity[];
 
     @OneToMany(() => UserModuleEntity, (um) => um.module)
-    userModules: UserModuleEntity[];
+    userModules!: UserModuleEntity[];
 }

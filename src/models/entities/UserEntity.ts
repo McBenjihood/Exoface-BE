@@ -5,22 +5,22 @@ import UserModuleEntity from "@/models/entities/UserModuleEntity.js";
 @Entity({ name: "User" })
 export default class UserEntity {
     @PrimaryGeneratedColumn({ name: "userId" })
-    userId: number;
+    userId!: number;
 
-    @Column("varchar", { length: 50 })
-    name: string;
+    @Column({ type: "varchar", length: 50 })
+    name!: string;
 
-    @Column("varchar", { length: 50 })
-    surname: string;
+    @Column({ type: "varchar", length: 50 })
+    surname!: string;
 
-    @Column("varchar", { length: 100, unique: true })
-    email: string;
+    @Column({ type: "varchar", length: 100, unique: true })
+    email!: string;
 
-    @Column("varchar", { length: 255 })
-    password: string;
+    @Column({ type: "varchar", length: 255 })
+    password!: string;
 
-    @Column("varchar", { length: 50 })
-    role: string;
+    @Column({ type: "varchar",length: 50 })
+    role!: string;
 
     @OneToMany(() => VmEntity, (vm) => vm.user)
     vms!: VmEntity[];

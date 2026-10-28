@@ -2,6 +2,7 @@ import UserEntity from "@/models/entities/UserEntity.js"
 import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js"
 import {AppDataSource} from "@/models/datasource.js";
 import jwt from "jsonwebtoken";
+import type { Response } from "express";
 
 
 const UserRepository = AppDataSource.getRepository(UserEntity);
@@ -27,7 +28,7 @@ export function createJWT(res: Response, sub: string, email: string, role: strin
 
 export async function initUserRegister(res: Response, email: string){
     try{
-        const userById: ProvisionalUserEntity = ProvisionalUserRepository.findOneByOrFail({email: email});
+        const userById: ProvisionalUserEntity = await ProvisionalUserRepository.findOneByOrFail({email: email});
         if (userById){
 
         }
