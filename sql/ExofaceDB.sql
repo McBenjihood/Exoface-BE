@@ -47,17 +47,19 @@ CREATE TABLE UserModule (
                             FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE
 );
 
-CREATE TABLE ProvisionalUser (
-                          userId INT AUTO_INCREMENT PRIMARY KEY,
-                          name VARCHAR(50),
-                          surname VARCHAR(50),
-                          email VARCHAR(50) UNIQUE,
-                          role ENUM('teacher', 'student') NOT NULL,
-                          class VARCHAR(10),
-                          FOREIGN KEY (usercodeId) REFERENCES ProvisionalUserCode(usercodeId) ON DELETE CASCADE,
-);
 CREATE TABLE ProvisionalUserCode (
-                          usercodeId int AUTO_INCREMENT PRIMARY KEY,
-                          enabled boolean,
-                          code varchar(50)
+                                     usercodeId int AUTO_INCREMENT PRIMARY KEY,
+                                     enabled boolean,
+                                     code varchar(50)
+);
+
+CREATE TABLE ProvisionalUser (
+                                 userId INT AUTO_INCREMENT PRIMARY KEY,
+                                 name VARCHAR(50),
+                                 surname VARCHAR(50),
+                                 email VARCHAR(50) UNIQUE,
+                                 role ENUM('teacher', 'student') NOT NULL,
+                                 class VARCHAR(10),
+                                 usercodeId INT,
+                                 FOREIGN KEY (usercodeId) REFERENCES ProvisionalUserCode(usercodeId) ON DELETE CASCADE
 );

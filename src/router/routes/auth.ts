@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import type { Request, Response } from "express";
-import {initUserRegister, createJWT} from "@/services/AuthService.js"
+import {initUserRegister, createJWT} from "@/services/AuthService.js";
 
 const router = Router();
 

@@ -5,7 +5,7 @@ export enum UserRole {
     STUDENT = 'student',
 }
 
-@Entity({name: 'provisionalUser'})
+@Entity({name: 'ProvisionalUser'})
 export default class ProvisionalUserEntity {
     @PrimaryGeneratedColumn({name: 'userId'})
     userId!: number;
@@ -25,6 +25,6 @@ export default class ProvisionalUserEntity {
     })
     role!: UserRole;
 
-    @Column({type: 'int', nullable: true})
-    classId!: number | null;
+    @Column({type: 'varchar', length: 50, nullable: true})
+    class!: string;
 }

@@ -1,17 +1,20 @@
-import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js"
+import ProvisionalUserEntity, {UserRole} from "@/models/entities/ProvisionalUserEntity.js"
 import {AppDataSource} from "@/models/datasource.js";
 import type { Response } from "express";
 
 
-const TeacherRepository = AppDataSource.getRepository(TeacherEntity)
+const ProvisionalUserRepository = AppDataSource.getRepository(ProvisionalUserEntity);
 
-export function addProvisionalUser(name: string, email: string, password : string){
-    const newTeacher = new TeacherEntity();
-    newTeacher.name = name;
-    newTeacher.email = "john@teacher.com";
-    newTeacher.password = "12345678";
+export  function addProvisionalUser(name: string, surname: string, email: string, classname: string, role : UserRole){
+    const newUser = new ProvisionalUserEntity();
+    newUser.name = name;
+    newUser.surname = surname;
+    newUser.email = email;
+    newUser.role = role;
+    newUser.class = classname;
+
     try {
-        TeacherRepository.save(newTeacher);
+         ProvisionalUserRepository.save(newUser);
     }catch (e) {
         console.log(e)
     }
