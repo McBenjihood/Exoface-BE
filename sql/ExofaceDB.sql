@@ -54,7 +54,7 @@ CREATE TABLE ProvisionalUser (
                           email VARCHAR(50) UNIQUE,
                           role ENUM('teacher', 'student') NOT NULL,
                           class VARCHAR(10),
-                          FOREIGN KEY (classId) REFERENCES Class(classId) ON DELETE SET NULL
+                          FOREIGN KEY (usercodeId) REFERENCES ProvisionalUserCode(usercodeId) ON DELETE SET NULL
 );
 CREATE TABLE ProvisionalUserCode (
                           usercodeId int AUTO_INCREMENT PRIMARY KEY,
