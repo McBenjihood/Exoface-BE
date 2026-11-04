@@ -25,8 +25,7 @@ CREATE TABLE Module (
 );
 
 CREATE TABLE Vm (
-                    vmId INT AUTO_INCREMENT PRIMARY KEY,
-                    uuid varchar(36),
+                    uuid varchar(36) PRIMARY KEY ,
                     name VARCHAR(50),
                     userId INT,
                     FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE
