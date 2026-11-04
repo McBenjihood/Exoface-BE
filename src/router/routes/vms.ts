@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(authenticateJwt);
 
-router.post("/create", requireRole("teacher"), async (req: Request, res: Response) => {
+router.post("/create", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
     try {
         const { name, templateId, instanceTypeId, diskSize } = req.body;
 

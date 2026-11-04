@@ -1,11 +1,12 @@
 import express, { Router } from "express";
 import type { Request, Response } from "express";
 import {addProvisionalUser} from "@/services/ImportService.js";
+import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js"
 
 const router = Router();
 
-
-router.post("/importusers", (req: Request, res: Response) => {
+router.use(authenticateJwt);
+router.post("/importusers",requireRole("teacher", "admin"), (req: Request, res: Response) => {
     try {
         const users = req.body;
 
