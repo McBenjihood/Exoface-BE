@@ -1,6 +1,6 @@
 import { transporter } from "@/config/mailer.js";
 
-export async function sendLoginEmail(toEmail: string, userName: string, OTP: number) {
+export async function sendLoginEmail(toEmail: string, userName: string, OTP: string) {
     const info = await transporter.sendMail({
         from: `"Exoface" <${process.env.SMTP_USER}>`,
         to: toEmail,

@@ -13,7 +13,7 @@ router.post('/create-teacher',express.json(), (req: Request, res: Response) => {
 
 router.get("/send-test", async (req: Request, res: Response) => {
     try {
-        await sendLoginEmail("benjaminmikagerresheim@gmail.com", "test", 123456);
+        await sendLoginEmail("benjaminmikagerresheim@gmail.com", "test", "123456");
 
         return res.status(200).json({
             message: "Test-E-Mail wurde erfolgreich gesendet!"

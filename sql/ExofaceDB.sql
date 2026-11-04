@@ -49,8 +49,8 @@ CREATE TABLE UserModule (
 
 CREATE TABLE ProvisionalUserCode (
                                      userCodeId int AUTO_INCREMENT PRIMARY KEY,
-                                     enabled boolean,
-                                     code varchar(50)
+                                     enabled boolean DEFAULT FALSE,
+                                     code varchar(50) DEFAULT ''
 );
 
 CREATE TABLE ProvisionalUser (
