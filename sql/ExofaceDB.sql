@@ -48,7 +48,7 @@ CREATE TABLE UserModule (
 );
 
 CREATE TABLE ProvisionalUserCode (
-                                     usercodeId int AUTO_INCREMENT PRIMARY KEY,
+                                     userCodeId int AUTO_INCREMENT PRIMARY KEY,
                                      enabled boolean,
                                      code varchar(50)
 );
@@ -60,6 +60,6 @@ CREATE TABLE ProvisionalUser (
                                  email VARCHAR(50) UNIQUE,
                                  role ENUM('teacher', 'student') NOT NULL,
                                  class VARCHAR(10),
-                                 usercodeId INT,
-                                 FOREIGN KEY (usercodeId) REFERENCES ProvisionalUserCode(usercodeId) ON DELETE CASCADE
+                                 userCodeId INT,
+                                 FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode(userCodeId) ON DELETE CASCADE
 );
