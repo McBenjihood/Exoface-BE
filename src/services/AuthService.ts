@@ -1,5 +1,6 @@
 import UserEntity from "@/models/entities/UserEntity.js"
 import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js"
+import { ProvisionalUserCodeEntity } from '@/models/entities/ProvisionalUserCodeEntity.js'
 import {AppDataSource} from "@/models/datasource.js";
 import jwt from "jsonwebtoken";
 import type { Response } from "express";
@@ -35,5 +36,8 @@ export async function initUserRegister(res: Response, email: string){
     }catch (e) {
 
     }
+}
 
+export async function initProvUserCode(user: ProvisionalUserEntity){
+    const userCode: ProvisionalUserCodeEntity = user.userCode;
 }
