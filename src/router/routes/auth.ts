@@ -18,8 +18,9 @@ router.post("/login", (req: Request, res: Response, next) => {
     })(req, res, next);
 });
 
-router.post("/init-register", (req: Request, res: Response) => {
-
+router.post("/init-register", async (req: Request, res: Response) => {
+    const { email } = req.body;
+    return await initUserRegister(res, email);
 })
 
 
