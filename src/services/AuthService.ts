@@ -12,22 +12,17 @@ const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
 const ProvisionalUserRepository = AppDataSource.getRepository(ProvisionalUserEntity);
 
-export function createJWT(res: Response, sub: string, email: string, role: string){
-    const token = jwt.sign({
+export function createJWT(user: UserEntity) {
+    return jwt.sign({
             iss: process.env.JWT_ISSUER,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 3600,
-            sub: sub,
-            email: email,
-            role: role
+            sub: String(user.userId),
+            email: user.email,
+            role: user.role,
         },
         process.env.JWT_SECRET as string
     );
-
-    return res.status(200).json({
-        message: "Erfolgreich eingeloggt",
-        token: token
-    });
 }
 
 export async function initUserRegister(res: Response, email: string){
