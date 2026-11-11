@@ -12,7 +12,7 @@ export class ServiceError extends Error {
 }
 
 export interface CreateVmParams {
-    userId: number;
+    targetUserId: number;
     name: string;
     templateId?: string;
     instanceTypeId?: string;
@@ -20,7 +20,7 @@ export interface CreateVmParams {
 }
 
 export async function createVm({
-                                   userId,
+                                   targetUserId,
                                    name,
                                    templateId = "00000000-0000-0000-0000-000000000000",
                                    instanceTypeId = "00000000-0000-0000-0000-000000000000",
@@ -29,14 +29,17 @@ export async function createVm({
     const userRepository = AppDataSource.getRepository(UserEntity);
     const vmRepository = AppDataSource.getRepository(VmEntity);
 
-    const user = await userRepository.findOneBy({ userId });
-    if (!user) {
-        throw new ServiceError(404, "Benutzer nicht gefunden.");
+    const targetUser = await userRepository.findOneBy({ userId: targetUserId });
+    if (!targetUser) {
+        throw new ServiceError(404, `Empfänger-Benutzer mit ID ${targetUserId} existiert nicht.`);
     }
 
-    const existingVm = await vmRepository.findOneBy({ userId, name });
+    const existingVm = await vmRepository.findOneBy({
+        userId: targetUser.userId,
+        name: name
+    });
     if (existingVm) {
-        throw new ServiceError(409, `Du besitzt bereits eine VM mit dem Namen '${name}'.`);
+        throw new ServiceError(409, `Der Empfänger besitzt bereits eine VM mit dem Namen '${name}'.`);
     }
 
     let response: globalThis.Response;
@@ -53,7 +56,7 @@ export async function createVm({
             signal: AbortSignal.timeout(10000)
         });
     } catch (networkError: any) {
-        console.error("Exoscale connection error:", networkError);
+        console.error("Exoscale network error:", networkError);
         throw new ServiceError(502, "Cloud-Provider ist derzeit nicht erreichbar.");
     }
 
@@ -73,9 +76,8 @@ export async function createVm({
 
     const newVm = vmRepository.create({
         uuid: instanceUuid,
-        name,
-        userId: user.userId
+        name: name,
+        userId: targetUser.userId
     });
-
     return await vmRepository.save(newVm);
 }

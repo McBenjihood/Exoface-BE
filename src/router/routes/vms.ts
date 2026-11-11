@@ -9,7 +9,11 @@ router.use(authenticateJwt);
 
 router.post("/create", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
     try {
-        const { name, templateId, instanceTypeId, diskSize } = req.body;
+        const { targetUserId, name, templateId, instanceTypeId, diskSize } = req.body;
+
+        if (!targetUserId || typeof targetUserId !== "number") {
+            return res.status(400).json({ error: "Ein gültiger 'recipientUserId' (Zahl) ist erforderlich." });
+        }
 
         if (!name || typeof name !== "string" || name.trim().length === 0) {
             return res.status(400).json({ error: "Ein gültiger Name ist erforderlich." });
@@ -24,7 +28,7 @@ router.post("/create", requireRole("teacher", "admin"), async (req: Request, res
         }
 
         const vm = await createVm({
-            userId: req.user!.userId,
+            targetUserId: targetUserId,
             name: name.trim(),
             templateId,
             instanceTypeId,
@@ -40,9 +44,7 @@ router.post("/create", requireRole("teacher", "admin"), async (req: Request, res
             return res.status(error.status).json({ error: error.message });
         }
         console.error("Unhandled error in POST /api/vms:", error);
-        return res.status(500).json({
-            error: "Ein interner Serverfehler ist aufgetreten."
-        });
+        return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
     }
 });
 
