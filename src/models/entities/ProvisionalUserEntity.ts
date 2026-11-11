@@ -2,7 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  OneToOne,
   JoinColumn,
 } from "typeorm";
 import { ProvisionalUserCodeEntity } from "@/models/entities/ProvisionalUserCodeEntity.js";
@@ -38,12 +38,14 @@ export default class ProvisionalUserEntity {
   @Column({ type: "int", nullable: true, name: "userCodeId" })
   userCodeId!: number | null;
 
-  @ManyToOne(
-    () => ProvisionalUserCodeEntity,
-    (userCode) => userCode.provisionalUsers,
-    {
-      onDelete: "CASCADE",
-    },
+  @OneToOne(
+      () => ProvisionalUserCodeEntity,
+      (userCode) => userCode.provisionalUser,
+      {
+        onDelete: "CASCADE",
+        cascade: true,
+        eager: true,
+      },
   )
   @JoinColumn({ name: "userCodeId" })
   userCode!: ProvisionalUserCodeEntity;

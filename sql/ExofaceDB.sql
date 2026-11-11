@@ -60,6 +60,6 @@ CREATE TABLE ProvisionalUser (
                                  email VARCHAR(50) UNIQUE,
                                  role ENUM('teacher', 'student') NOT NULL,
                                  class VARCHAR(10),
-                                 userCodeId INT,
+                                 userCodeId INT UNIQUE,
                                  FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode(userCodeId) ON DELETE CASCADE
 );

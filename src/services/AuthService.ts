@@ -1,11 +1,12 @@
 import UserEntity from "@/models/entities/UserEntity.js"
 import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js"
-import { ProvisionalUserCodeEntity } from '@/models/entities/ProvisionalUserCodeEntity.js'
+import {ProvisionalUserCodeEntity} from '@/models/entities/ProvisionalUserCodeEntity.js'
 import {AppDataSource} from "@/models/datasource.js";
 import jwt from "jsonwebtoken";
-import type { Response } from "express";
+import type {Response} from "express";
 import {randomInt} from "node:crypto";
 import {sendLoginEmail} from "@/services/EmailService.js";
+import bcrypt from "bcrypt";
 
 
 const UserRepository = AppDataSource.getRepository(UserEntity);
@@ -44,25 +45,56 @@ export async function initUserRegister(res: Response, email: string){
             });
         }
     }catch (e) {
-        console.log(e)
+        console.log(e);
         return res.status(404).json({
             message: "No User with this Email was found."
         });    }
 }
 
 export async function initProvUserCode(user: ProvisionalUserEntity){
-    const userCodeEntity = new ProvisionalUserCodeEntity();
-    userCodeEntity.code = generateOTP(6);
-    userCodeEntity.enabled = true;
+    const provUserCodeEntity = new ProvisionalUserCodeEntity();
+    provUserCodeEntity.code = generateOTP(6);
+    provUserCodeEntity.enabled = true;
 
-    await ProvisionalUserCodeRepository.save(userCodeEntity);
+    await ProvisionalUserCodeRepository.save(provUserCodeEntity);
 
-    user.userCode = userCodeEntity;
+    user.userCode = provUserCodeEntity;
     await ProvisionalUserRepository.save(user);
-    return userCodeEntity.code;
+    return provUserCodeEntity.code;
+}
+
+export async function verifyUserRegister(res: Response,email: String, otp: String, password: String){
+    try{
+        const provUserEntity = await ProvisionalUserRepository.findOneByOrFail({email: email});
+        const provUserCodeEntity = provUserEntity.userCode;
+        if (provUserCodeEntity.enabled && provUserCodeEntity.code == otp){
+            const userEntity = new UserEntity(
+                provUserEntity.name,
+                provUserEntity.surname,
+                provUserEntity.email,
+                await bcrypt.hash(password, 10),
+                provUserEntity.role,
+            );
+            await UserRepository.save(userEntity);
+
+            await ProvisionalUserRepository.remove(provUserEntity);
+            return res.status(200).json({
+                message: "User registered successfully."
+            })
+        }else {
+            return res.status(400).json({
+                message: "Couldn't verify this One-Time-Password"
+            });
+        }
+    }catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            message: "Error"
+        });
+    }
 }
 
 function generateOTP(length: number): string {
-    const max = 10 ** length;
+    const max = 1000000;
     return randomInt(0, max).toString().padStart(length, '0');
 }

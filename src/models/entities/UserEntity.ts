@@ -4,6 +4,13 @@ import UserModuleEntity from "@/models/entities/UserModuleEntity.js";
 
 @Entity({ name: "User" })
 export default class UserEntity {
+    constructor(name: String, surname: String, email: String, password: String, role: String) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+        this.role = role
+    }
     @PrimaryGeneratedColumn({ name: "userId" })
     userId!: number;
 

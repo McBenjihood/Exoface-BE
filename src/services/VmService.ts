@@ -59,7 +59,6 @@ export async function createVm({
 
     if (!response.ok) {
         const errorText = await response.text();
-        // Log internally for debugging, but hide details from client
         console.error(`Exoscale API responded with status ${response.status}:`, errorText);
         throw new ServiceError(502, "Fehler bei der Bereitstellung der VM beim Cloud-Provider.");
     }
