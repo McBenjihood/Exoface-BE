@@ -14,7 +14,11 @@ router.post("/login", (req: Request, res: Response, next) => {
             return res.status(401).json({ error: info?.message || "Authentifizierung fehlgeschlagen" });
         }
 
-        return createJWT(res, user.userId, user.email, user.role)
+        const token = createJWT(user);
+        return res.status(200).json({
+            message: "Erfolgreich eingeloggt",
+            token: token
+        });
     })(req, res, next);
 });
 
