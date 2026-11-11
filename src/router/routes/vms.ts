@@ -1,11 +1,12 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import {createVm, getInstanceTypes, ServiceError} from "@/services/VmService.js";
+import {createVm, getInstanceTypes, getTemplates, ServiceError} from "@/services/VmService.js";
 import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js";
 
 const router = Router();
 
 router.use(authenticateJwt);
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 router.get("/types", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
     try {
@@ -19,6 +20,20 @@ router.get("/types", requireRole("teacher", "admin"), async (req: Request, res: 
         }
 
         console.error("Unhandled error in GET /api/vms/types:", error);
+        return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
+    }
+});
+
+router.get("/templates", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
+    try {
+        const templates = await getTemplates();
+        return res.status(200).json({ templates });
+    } catch (error: any) {
+        if (error instanceof ServiceError) {
+            return res.status(error.status).json({ error: error.message });
+        }
+
+        console.error("Unhandled error in GET /api/vms/templates:", error);
         return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
     }
 });
@@ -37,6 +52,14 @@ router.post("/create", requireRole("teacher", "admin"), async (req: Request, res
 
         if (name.length > 50) {
             return res.status(400).json({ error: "Der Name darf nicht länger als 50 Zeichen lang sein." });
+        }
+
+        if (templateId && !UUID_REGEX.test(templateId)) {
+            return res.status(400).json({ error: "Ungültiges Format fürs Template." });
+        }
+
+        if (instanceTypeId && !UUID_REGEX.test(instanceTypeId)) {
+            return res.status(400).json({ error: "Ungültiges Format für den Instanz Typ." });
         }
 
         if (diskSize !== undefined && (typeof diskSize !== "number" || diskSize < 10 || diskSize > 500)) {
