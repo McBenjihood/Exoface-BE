@@ -46,14 +46,15 @@ export async function initUserRegister(res: Response, email: string) {
 
 export async function initProvUserCode(user: ProvisionalUserEntity) {
     const provUserCodeEntity = new ProvisionalUserCodeEntity();
-    provUserCodeEntity.code = generateOTP(6);
+    const otp = generateOTP(6)
+    provUserCodeEntity.code = await bcrypt.hash(otp , 10);
     provUserCodeEntity.enabled = true;
 
     await ProvisionalUserCodeRepository.save(provUserCodeEntity);
 
     user.userCode = provUserCodeEntity;
     await ProvisionalUserRepository.save(user);
-    return provUserCodeEntity.code;
+    return otp;
 }
 
 export async function verifyUserRegister(res: Response, email: string, otp: string, password: string) {
@@ -66,27 +67,28 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
         }
 
         const provUserCodeEntity = provUserEntity.userCode;
-
-        if (provUserCodeEntity.enabled && provUserCodeEntity.code === otp) {
-            await AppDataSource.transaction(async (transactionalEntityManager) => {
-                const userEntity = new UserEntity(
-                    provUserEntity.name,
-                    provUserEntity.surname,
-                    provUserEntity.email,
-                    await bcrypt.hash(password, 10),
-                    provUserEntity.role,
-                );
-                await transactionalEntityManager.save(userEntity);
-                await transactionalEntityManager.remove(provUserEntity);
-            });
-            return res.status(200).json({
-                message: "User registered successfully."
-            });
-        } else {
-            return res.status(400).json({
-                message: "Couldn't verify this One-Time-Password"
-            });
+        const timestampInSeconds = Math.floor(Date.now() / 1000);
+        if (provUserCodeEntity.enabled && provUserCodeEntity.expiredAt > timestampInSeconds) {
+            if (await bcrypt.compare(otp,provUserCodeEntity.code)){
+                await AppDataSource.transaction(async (transactionalEntityManager) => {
+                    const userEntity = new UserEntity(
+                        provUserEntity.name,
+                        provUserEntity.surname,
+                        provUserEntity.email,
+                        await bcrypt.hash(password, 10),
+                        provUserEntity.role,
+                    );
+                    await transactionalEntityManager.save(userEntity);
+                    await transactionalEntityManager.remove(provUserEntity);
+                });
+                return res.status(200).json({
+                    message: "User registered successfully."
+                });
+            }
         }
+        return res.status(400).json({
+            message: "Couldn't verify this One-Time-Password"
+        });
     } catch (e) {
         console.error("Failed to verify user registration:", e);
         return res.status(500).json({

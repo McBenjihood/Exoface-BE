@@ -2,65 +2,75 @@ DROP DATABASE IF EXISTS ExofaceDB;
 CREATE DATABASE ExofaceDB;
 USE ExofaceDB;
 
-CREATE TABLE Class (
-                       classId INT AUTO_INCREMENT PRIMARY KEY,
-                       name VARCHAR(10)
+CREATE TABLE Class
+(
+    classId INT AUTO_INCREMENT PRIMARY KEY,
+    name    VARCHAR(10)
 );
 
-CREATE TABLE User (
-                      userId INT AUTO_INCREMENT PRIMARY KEY,
-                      name VARCHAR(50),
-                      surname VARCHAR(50),
-                      email VARCHAR(50) UNIQUE,
-                      password VARCHAR(255),
-                      role ENUM('teacher', 'student', 'admin') NOT NULL,
-                      classId INT NULL,
-                      FOREIGN KEY (classId) REFERENCES Class(classId) ON DELETE SET NULL
+CREATE TABLE User
+(
+    userId   INT AUTO_INCREMENT PRIMARY KEY,
+    name     VARCHAR(50),
+    surname  VARCHAR(50),
+    email    VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    role     ENUM ('teacher', 'student', 'admin') NOT NULL,
+    classId  INT                                  NULL,
+    FOREIGN KEY (classId) REFERENCES Class (classId) ON DELETE SET NULL
 );
 
-CREATE TABLE Module (
-                        moduleId INT AUTO_INCREMENT PRIMARY KEY,
-                        shortcut VARCHAR(10),
-                        description VARCHAR(100)
+CREATE TABLE Module
+(
+    moduleId    INT AUTO_INCREMENT PRIMARY KEY,
+    shortcut    VARCHAR(10),
+    description VARCHAR(100)
 );
 
-CREATE TABLE Vm (
-                    uuid varchar(36) PRIMARY KEY ,
-                    name VARCHAR(50),
-                    userId INT,
-                    FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE
+CREATE TABLE Vm
+(
+    uuid   varchar(36) PRIMARY KEY,
+    name   VARCHAR(50),
+    userId INT,
+    FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
 );
 
-CREATE TABLE ClassModule (
-                             moduleId INT,
-                             classId INT,
-                             PRIMARY KEY (moduleId, classId),
-                             FOREIGN KEY (moduleId) REFERENCES Module(moduleId) ON DELETE CASCADE,
-                             FOREIGN KEY (classId) REFERENCES Class(classId) ON DELETE CASCADE
+CREATE TABLE ClassModule
+(
+    moduleId INT,
+    classId  INT,
+    PRIMARY KEY (moduleId, classId),
+    FOREIGN KEY (moduleId) REFERENCES Module (moduleId) ON DELETE CASCADE,
+    FOREIGN KEY (classId) REFERENCES Class (classId) ON DELETE CASCADE
 );
 
-CREATE TABLE UserModule (
-                            moduleId INT,
-                            userId INT,
-                            PRIMARY KEY (moduleId, userId),
-                            FOREIGN KEY (moduleId) REFERENCES Module(moduleId) ON DELETE CASCADE,
-                            FOREIGN KEY (userId) REFERENCES User(userId) ON DELETE CASCADE
+CREATE TABLE UserModule
+(
+    moduleId INT,
+    userId   INT,
+    PRIMARY KEY (moduleId, userId),
+    FOREIGN KEY (moduleId) REFERENCES Module (moduleId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
 );
 
-CREATE TABLE ProvisionalUserCode (
-                                     userCodeId int AUTO_INCREMENT PRIMARY KEY,
-                                     enabled boolean DEFAULT FALSE,
-                                     code varchar(50) DEFAULT ''
+CREATE TABLE ProvisionalUserCode
+(
+    userCodeId int AUTO_INCREMENT PRIMARY KEY,
+    enabled    boolean                  DEFAULT FALSE,
+    code       varchar(255)              DEFAULT '',
+    createdAt INT UNSIGNED NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+    expiredAt INT UNSIGNED NOT NULL DEFAULT (UNIX_TIMESTAMP() + 900)
 );
 
-CREATE TABLE ProvisionalUser (
-                                 userId INT AUTO_INCREMENT PRIMARY KEY,
-                                 name VARCHAR(50),
-                                 surname VARCHAR(50),
-                                 email VARCHAR(50) UNIQUE,
-                                 role ENUM('teacher', 'student') NOT NULL,
-                                 class VARCHAR(10),
-                                 userCodeId INT UNIQUE,
-                                 FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode(userCodeId) ON DELETE CASCADE
+CREATE TABLE ProvisionalUser
+(
+    userId     INT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(50),
+    surname    VARCHAR(50),
+    email      VARCHAR(50) UNIQUE,
+    role       ENUM ('teacher', 'student') NOT NULL,
+    class      VARCHAR(10),
+    userCodeId INT UNIQUE,
+    FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode (userCodeId) ON DELETE CASCADE
 );
 

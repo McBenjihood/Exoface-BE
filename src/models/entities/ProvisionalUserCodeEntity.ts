@@ -12,6 +12,12 @@ export class ProvisionalUserCodeEntity {
     @Column({ type: "varchar", length: 50, nullable: true })
     code!: string;
 
+    @Column({ type: "int", unsigned: true, default: () => "UNIX_TIMESTAMP()" })
+    createdAt!: number;
+
+    @Column({ type: "int", unsigned: true, default: () => "(UNIX_TIMESTAMP() + 900)" })
+    expiredAt!: number;
+
     @OneToOne(() => ProvisionalUserEntity, (user) => user.userCode)
     provisionalUser!: ProvisionalUserEntity;
 }
