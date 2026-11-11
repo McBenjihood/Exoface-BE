@@ -1,13 +1,12 @@
-import UserEntity from "@/models/entities/UserEntity.js"
-import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js"
-import {ProvisionalUserCodeEntity} from '@/models/entities/ProvisionalUserCodeEntity.js'
-import {AppDataSource} from "@/models/datasource.js";
+import UserEntity from "@/models/entities/UserEntity.js";
+import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js";
+import { ProvisionalUserCodeEntity } from '@/models/entities/ProvisionalUserCodeEntity.js';
+import { AppDataSource } from "@/models/datasource.js";
 import jwt from "jsonwebtoken";
-import type {Response} from "express";
-import {randomInt} from "node:crypto";
-import {sendLoginEmail} from "@/services/EmailService.js";
+import type { Response } from "express";
+import { randomInt } from "node:crypto";
+import { sendLoginEmail } from "@/services/EmailService.js";
 import bcrypt from "bcrypt";
-
 
 const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
@@ -26,27 +25,26 @@ export function createJWT(user: UserEntity) {
     );
 }
 
-export async function initUserRegister(res: Response, email: string){
-    try{
-        const userById: ProvisionalUserEntity = await ProvisionalUserRepository.findOneByOrFail({email: email});
-        if (userById){
+export async function initUserRegister(res: Response, email: string) {
+    try {
+        const userById = await ProvisionalUserRepository.findOneBy({ email: email });
+
+        if (userById) {
             await sendLoginEmail(email, userById.name, await initProvUserCode(userById));
-            return res.status(200).json({
-                message: "Email mit Code wurde versendet."
-            });
-        }else {
-            return res.status(404).json({
-                message: "Unknown Error"
-            });
         }
-    }catch (e) {
-        console.log(e);
-        return res.status(404).json({
-            message: "No User with this Email was found."
-        });    }
+
+        return res.status(200).json({
+            message: "Falls ein passendes Konto existiert, wurde eine E-Mail mit einem Code versendet."
+        });
+    } catch (e) {
+        console.error("Failed to initiate user registration:", e);
+        return res.status(500).json({
+            message: "Registrierung konnte nicht gestartet werden. Bitte versuche es erneut."
+        });
+    }
 }
 
-export async function initProvUserCode(user: ProvisionalUserEntity){
+export async function initProvUserCode(user: ProvisionalUserEntity) {
     const provUserCodeEntity = new ProvisionalUserCodeEntity();
     provUserCodeEntity.code = generateOTP(6);
     provUserCodeEntity.enabled = true;
@@ -58,33 +56,41 @@ export async function initProvUserCode(user: ProvisionalUserEntity){
     return provUserCodeEntity.code;
 }
 
-export async function verifyUserRegister(res: Response,email: String, otp: String, password: String){
-    try{
-        const provUserEntity = await ProvisionalUserRepository.findOneByOrFail({email: email});
-        const provUserCodeEntity = provUserEntity.userCode;
-        if (provUserCodeEntity.enabled && provUserCodeEntity.code == otp){
-            const userEntity = new UserEntity(
-                provUserEntity.name,
-                provUserEntity.surname,
-                provUserEntity.email,
-                await bcrypt.hash(password, 10),
-                provUserEntity.role,
-            );
-            await UserRepository.save(userEntity);
-
-            await ProvisionalUserRepository.remove(provUserEntity);
-            return res.status(200).json({
-                message: "User registered successfully."
-            })
-        }else {
+export async function verifyUserRegister(res: Response, email: string, otp: string, password: string) {
+    try {
+        const provUserEntity = await ProvisionalUserRepository.findOneBy({ email: email });
+        if (!provUserEntity || !provUserEntity.userCode) {
             return res.status(400).json({
                 message: "Couldn't verify this One-Time-Password"
             });
         }
-    }catch (e) {
-        console.log(e);
-        return res.status(400).json({
-            message: "Error"
+
+        const provUserCodeEntity = provUserEntity.userCode;
+
+        if (provUserCodeEntity.enabled && provUserCodeEntity.code === otp) {
+            await AppDataSource.transaction(async (transactionalEntityManager) => {
+                const userEntity = new UserEntity(
+                    provUserEntity.name,
+                    provUserEntity.surname,
+                    provUserEntity.email,
+                    await bcrypt.hash(password, 10),
+                    provUserEntity.role,
+                );
+                await transactionalEntityManager.save(userEntity);
+                await transactionalEntityManager.remove(provUserEntity);
+            });
+            return res.status(200).json({
+                message: "User registered successfully."
+            });
+        } else {
+            return res.status(400).json({
+                message: "Couldn't verify this One-Time-Password"
+            });
+        }
+    } catch (e) {
+        console.error("Failed to verify user registration:", e);
+        return res.status(500).json({
+            message: "Registrierung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
         });
     }
 }
