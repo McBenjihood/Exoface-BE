@@ -15,15 +15,23 @@ export interface CreateVmParams {
     targetUserId: number;
     name: string;
     templateId?: string;
-    instanceTypeId?: string;
+    instanceTypeId: string;
     diskSize?: number;
+}
+export interface InstanceType {
+    id: string;
+    family: string;
+    size: string;
+    cpus: number;
+    memory: number;
+    authorized?: boolean;
 }
 
 export async function createVm({
                                    targetUserId,
                                    name,
                                    templateId = "00000000-0000-0000-0000-000000000000",
-                                   instanceTypeId = "00000000-0000-0000-0000-000000000000",
+                                   instanceTypeId,
                                    diskSize = 10
                                }: CreateVmParams): Promise<VmEntity> {
     const userRepository = AppDataSource.getRepository(UserEntity);
@@ -80,4 +88,29 @@ export async function createVm({
         userId: targetUser.userId
     });
     return await vmRepository.save(newVm);
+}
+
+export async function getInstanceTypes(): Promise<InstanceType[]> {
+    let response: globalThis.Response;
+    try {
+        response = await fetch(`${EXOSCALE_BASE_URL}/instance-type`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            },
+            signal: AbortSignal.timeout(10000)
+        });
+    } catch (networkError: any) {
+        console.error("Exoscale network error fetching instance types:", networkError);
+        throw new ServiceError(502, "Cloud-Provider ist derzeit nicht erreichbar.");
+    }
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Exoscale API responded with status ${response.status}:`, errorText);
+        throw new ServiceError(502, "Fehler beim Abrufen der Instanztypen vom Cloud-Provider.");
+    }
+
+    const data = await response.json();
+    return data["instance-types"] || [];
 }
