@@ -20,7 +20,7 @@ CREATE TABLE User (
 
 CREATE TABLE Module (
                         moduleId INT AUTO_INCREMENT PRIMARY KEY,
-                        shortcut VARCHAR(10) UNIQUE,
+                        shortcut VARCHAR(10),
                         description VARCHAR(100)
 );
 
@@ -63,3 +63,4 @@ CREATE TABLE ProvisionalUser (
                                  userCodeId INT,
                                  FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode(userCodeId) ON DELETE CASCADE
 );
+
