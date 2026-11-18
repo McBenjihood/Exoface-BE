@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import testRoutes from '@/router/routes/test.js';
 import authRoutes from '@/router/routes/auth.js';
-import vmRoutes from '@/router/routes/vms.js';
+import vmRoutes from '@/router/routes/exoscale.js';
 import importRoutes from '@/router/routes/import.js';
 import moduleRoutes from '@/router/routes/module.js';
 
