@@ -4,7 +4,7 @@ import authRoutes from '@/router/routes/auth.js';
 import vmRoutes from '@/router/routes/vms.js';
 import importRoutes from '@/router/routes/import.js';
 import moduleRoutes from '@/router/routes/module.js';
-
+import classRoutes from '@/router/routes/class.js';
 const router = Router();
 
 router.use('/test', testRoutes);
@@ -12,6 +12,7 @@ router.use('/auth', authRoutes);
 router.use('/vms', vmRoutes);
 router.use('/import', importRoutes);
 router.use('/module', moduleRoutes);
+router.use('/class', classRoutes);
 
 
 export default router;

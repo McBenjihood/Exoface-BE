@@ -11,10 +11,6 @@ const ModuleRepository = AppDataSource.getRepository(ModuleEntity);
 const UserModuleRepository = AppDataSource.getRepository(UserModuleEntity);
 
 
-
-
-
-
 export async function addModule(shortcut: string, description: string, teacherid :number) {
     try {
         const userId = Number(teacherid);
