@@ -1,7 +1,8 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import {createVm, getInstanceTypes, getTemplates, ServiceError} from "@/services/VmService.js";
+import {createVm, getInstanceTypes, getTemplates} from "@/services/VmService.js";
 import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js";
+import {ServiceError} from "@/errors/ServiceError.js";
 
 const router = Router();
 
