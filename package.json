@@ -8,6 +8,7 @@
     "dev": "concurrently \"nodemon --exec tsx src/app.ts\" \"prism mock exoscale-api-openapi-source.json --dynamic -p 4010\""
   },
   "dependencies": {
+    "@exoscale/sdk": "file:vendor/exoscale-sdk-0.1.0.tgz",
     "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
