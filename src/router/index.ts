@@ -11,6 +11,7 @@ router.use('/test', testRoutes);
 router.use('/auth', authRoutes);
 router.use('/vms', vmRoutes);
 router.use('/import', importRoutes);
-router.use('/module', moduleRoutes)
+router.use('/module', moduleRoutes);
+
 
 export default router;
