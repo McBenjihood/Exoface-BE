@@ -9,7 +9,7 @@ const router = Router();
 
 router.use('/test', testRoutes);
 router.use('/auth', authRoutes);
-router.use('/vms', vmRoutes);
+router.use('/exoscale', vmRoutes);
 router.use('/import', importRoutes);
 router.use('/module', moduleRoutes);
 
