@@ -8,7 +8,9 @@ import {ServiceError} from "@/errors/ServiceError.js";
 const TARGET_ZONE = process.env.EXOSCALE_ZONE || "ch-dk-2";
 
 export const exoscaleClient = new ExoscaleClient({
-    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS["ch-dk-2"]
+    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS["ch-dk-2"],
+    apiKey: process.env.EXOSCALE_API_KEY,
+    apiSecret: process.env.EXOSCALE_API_SECRET,
 });
 
 export async function createVm({
@@ -90,7 +92,7 @@ export async function getInstanceTypes(): Promise<InstanceType[]> {
 
 export async function getTemplates(): Promise<VmTemplate[]> {
     try {
-        const response = await exoscaleClient.listTemplates();
+        const response = await exoscaleClient.listTemplates({ visibility: "public" });
         const rawTemplates = response.templates || [];
 
         return rawTemplates.map((t: any) => ({
@@ -106,4 +108,16 @@ export async function getTemplates(): Promise<VmTemplate[]> {
         throw new ServiceError(502, "Cloud-Provider ist derzeit nicht erreichbar.");
     }
 
+}
+
+
+export async function getVmList() {
+    const vmRepository = AppDataSource.getRepository(VmEntity);
+    const vms = await vmRepository.find();
+
+    return vms.map(v => ({
+        uuid: v.uuid,
+        name: v.name,
+        userId: v.userId
+    }));
 }

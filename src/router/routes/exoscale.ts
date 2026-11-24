@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import {createVm, getInstanceTypes, getTemplates} from "@/services/VmService.js";
+import {createVm, getInstanceTypes, getTemplates, getVmList} from "@/services/VmService.js";
 import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js";
 import {ServiceError} from "@/errors/ServiceError.js";
 
@@ -84,6 +84,17 @@ router.post("/create", requireRole("teacher", "admin"), async (req: Request, res
             return res.status(error.status).json({ error: error.message });
         }
         console.error("Unhandled error in POST /api/vms:", error);
+        return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
+    }
+});
+
+
+router.get("/vms", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
+    try {
+        const vms = await getVmList();
+        return res.status(200).json({ vms });
+    } catch (error: any) {
+        console.error("Unhandled error in GET /api/exoscale/vms:", error);
         return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
     }
 });
