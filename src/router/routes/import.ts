@@ -7,15 +7,16 @@ import {findOrCreateClass} from "@/services/ClassesService.js";
 const router = Router();
 
 router.use(authenticateJwt);
-router.post("/importusers",requireRole("teacher", "admin"), (req: Request, res: Response) => {
+router.post("/importusers",requireRole("teacher", "admin"), async (req: Request, res: Response) => {
     try {
         const users = req.body;
 
         if (!Array.isArray(users)) {
+            return res.status(400).json({ error: "Array erwartet" });
         }
 
         for (const userData of users) {
-             addProvisionalUser(
+            await addProvisionalUser(
                 userData.name,
                 userData.surname,
                 userData.email,
@@ -24,13 +25,12 @@ router.post("/importusers",requireRole("teacher", "admin"), (req: Request, res: 
             );
         }
 
-        res.status(201).json({ message: `${users.length} provisional users erfolgreich importiert!` });
+        return res.status(201).json({ message: `${users.length} provisional users erfolgreich importiert!` });
     } catch (e) {
         console.error(e);
-
+        return res.status(500).json({ error: "Import fehlgeschlagen." });
     }
 });
-
 router.post("/importclasses", requireRole("teacher", "admin"), async (req: Request, res: Response) => {
     try {
         const users = req.body;
