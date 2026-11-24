@@ -7,6 +7,7 @@ import type { Response } from "express";
 import { randomInt } from "node:crypto";
 import { sendLoginEmail } from "@/services/EmailService.js";
 import bcrypt from "bcrypt";
+import {findOrCreateClass} from "@/services/ClassesService.js";
 
 const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
@@ -70,6 +71,10 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
         const timestampInSeconds = Math.floor(Date.now() / 1000);
         if (provUserCodeEntity.enabled && provUserCodeEntity.expiredAt > timestampInSeconds) {
             if (await bcrypt.compare(otp,provUserCodeEntity.code)){
+                const klasse = provUserEntity.class
+                    ? await findOrCreateClass(provUserEntity.class)
+                    : null;
+
                 await AppDataSource.transaction(async (transactionalEntityManager) => {
                     const userEntity = new UserEntity(
                         provUserEntity.name,
@@ -78,6 +83,7 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
                         await bcrypt.hash(password, 10),
                         provUserEntity.role,
                     );
+                    userEntity.classId = klasse ? klasse.classId : null;
                     await transactionalEntityManager.save(userEntity);
                     await transactionalEntityManager.remove(provUserEntity);
                 });
