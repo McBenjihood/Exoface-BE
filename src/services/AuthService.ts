@@ -10,6 +10,7 @@ import { randomInt } from "node:crypto";
 import { sendLoginEmail } from "@/services/EmailService.js";
 import bcrypt from "bcrypt";
 import {findOrCreateClass} from "@/services/ClassesService.js";
+import Class from "@/router/routes/class.js";
 
 const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
@@ -88,19 +89,22 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
                         await bcrypt.hash(password, 10),
                         provUserEntity.role,
                     );
-                    userEntity.classId = klasse ? klasse.classId : null;
+
                     await transactionalEntityManager.save(userEntity);
                     await transactionalEntityManager.remove(provUserEntity);
 
                     const className = provUserEntity.class
                     let classEntity = await ClassRepository.findOneBy({ name: className });
-                    const classId = classEntity?.classId
-                    const userclassentity = new UserClassEntity(
+                    let userEntityforId = await UserRepository.findOneBy({ email: email });
+                    console.log(classEntity);
+                    console.log(userEntityforId);
+                    if (!classEntity || !userEntityforId) {
+                        throw new Error("Id not found");
+                    }
 
-                        
-                    );
-
-
+                    const userclassentity = new UserClassEntity();
+                        userclassentity.userId = userEntityforId.userId;
+                        userclassentity.classId = classEntity.classId;
 
                 });
                 return res.status(200).json({
