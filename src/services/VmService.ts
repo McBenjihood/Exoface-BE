@@ -4,13 +4,13 @@ import UserEntity from "@/models/entities/UserEntity.js";
 import {ENDPOINTS, ExoscaleClient} from "@exoscale/sdk";
 import type {CreateVmParams, VmTemplate, InstanceType} from "@/interfaces/VmInterfaces.js";
 import {ServiceError} from "@/errors/ServiceError.js";
+import {In} from "typeorm";
+import UserClassEntity from "@/models/entities/UserClassEntity.js";
 
-const TARGET_ZONE = process.env.EXOSCALE_ZONE || "ch-dk-2";
+const TARGET_ZONE = (process.env.EXOSCALE_ZONE || "ch-dk-2") as keyof typeof ENDPOINTS;
 
 export const exoscaleClient = new ExoscaleClient({
-    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS["ch-dk-2"],
-    apiKey: process.env.EXOSCALE_API_KEY,
-    apiSecret: process.env.EXOSCALE_API_SECRET,
+    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS[TARGET_ZONE]
 });
 
 export async function createVm({
@@ -110,7 +110,6 @@ export async function getTemplates(): Promise<VmTemplate[]> {
 
 }
 
-
 export async function getVmList() {
     const vmRepository = AppDataSource.getRepository(VmEntity);
     const vms = await vmRepository.find();
@@ -120,4 +119,53 @@ export async function getVmList() {
         name: v.name,
         userId: v.userId
     }));
+}
+
+async function getAndAuthorizeVm(uuid: string, user: UserEntity): Promise<VmEntity> {
+    const vmRepository = AppDataSource.getRepository(VmEntity);
+    const userClassRepository = AppDataSource.getRepository(UserClassEntity);
+
+    const vm = await vmRepository.findOne({
+        where: { uuid },
+        relations: { user: true }
+    });
+
+    if (!vm) {
+        throw new ServiceError(404, "VM wurde nicht gefunden.");
+    }
+
+    const isOwner = vm.userId === user.userId;
+    const isAdmin = user.role === "admin";
+    let isTeacherOfStudentInSameClass = false;
+
+    if (user.role === "teacher" && vm.user?.role === "student") {
+        const teacherClasses = await userClassRepository.find({
+            where: [
+                { userId: user.userId },
+                { user: { userId: user.userId } }
+            ]
+        });
+
+        const teacherClassIds = teacherClasses.map((uc) => uc.classId);
+
+        if (teacherClassIds.length > 0) {
+            const sharedClass = await userClassRepository.findOne({
+                where: [
+                    { userId: vm.userId, classId: In(teacherClassIds) },
+                    { user: { userId: vm.userId }, class: { classId: In(teacherClassIds) } }
+                ]
+            });
+
+            isTeacherOfStudentInSameClass = !!sharedClass;
+        }
+    }
+
+    if (!isOwner && !isAdmin && !isTeacherOfStudentInSameClass) {
+        throw new ServiceError(
+            403,
+            "Zugriff verweigert: Fehlende Berechtigungen."
+        );
+    }
+
+    return vm;
 }
