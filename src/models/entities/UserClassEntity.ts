@@ -5,7 +5,7 @@ import ClassEntity from "@/models/entities/ClassEntity.js";
 @Entity({name: "UserClassEntity"})
 export default class UserClassEntity {
     @PrimaryColumn({type: "int", name: "userId" })
-    moduleId!: number;
+    userId!: number;
 
     @PrimaryColumn({type: "int", name: "classId" })
     classId!: number;
