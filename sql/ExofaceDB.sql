@@ -15,9 +15,16 @@ CREATE TABLE User
     surname  VARCHAR(50),
     email    VARCHAR(50) UNIQUE,
     password VARCHAR(255),
-    role     ENUM ('teacher', 'student', 'admin') NOT NULL,
-    classId  INT                                  NULL,
-    FOREIGN KEY (classId) REFERENCES Class (classId) ON DELETE SET NULL
+    role     ENUM ('teacher', 'student', 'admin') NOT NULL
+);
+
+CREATE TABLE UserClass
+(
+    classId INT,
+    userId   INT,
+    PRIMARY KEY (classId, userId),
+    FOREIGN KEY (classId) REFERENCES Class (classId) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
 );
 
 CREATE TABLE Module
@@ -73,4 +80,3 @@ CREATE TABLE ProvisionalUser
     userCodeId INT UNIQUE,
     FOREIGN KEY (userCodeId) REFERENCES ProvisionalUserCode (userCodeId) ON DELETE CASCADE
 );
-
