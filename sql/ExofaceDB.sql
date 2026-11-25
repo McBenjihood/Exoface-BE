@@ -38,8 +38,10 @@ CREATE TABLE Vm
 (
     uuid   varchar(36) PRIMARY KEY,
     name   VARCHAR(50),
+    moduleid INT,
     userId INT,
-    FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE,
+    FOREIGN KEY (moduleid) REFERENCES  Module (moduleId) ON DELETE  CASCADE
 );
 
 CREATE TABLE ClassModule
