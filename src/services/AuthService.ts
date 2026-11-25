@@ -16,7 +16,7 @@ const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
 const ProvisionalUserRepository = AppDataSource.getRepository(ProvisionalUserEntity);
 const ClassRepository = AppDataSource.getRepository(ClassEntity);
-const UserclassEntity = AppDataSource.getRepository(UserClassEntity);
+const UserclassRepository = AppDataSource.getRepository(UserClassEntity);
 
 
 export function createJWT(user: UserEntity) {
@@ -89,24 +89,28 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
                         await bcrypt.hash(password, 10),
                         provUserEntity.role,
                     );
-
+                    console.log(userEntity);
                     await transactionalEntityManager.save(userEntity);
                     await transactionalEntityManager.remove(provUserEntity);
+                    console.log(userEntity);
 
-                    const className = provUserEntity.class
-                    let classEntity = await ClassRepository.findOneBy({ name: className });
-                    let userEntityforId = await UserRepository.findOneBy({ email: email });
-                    console.log(classEntity);
-                    console.log(userEntityforId);
-                    if (!classEntity || !userEntityforId) {
-                        throw new Error("Id not found");
-                    }
 
-                    const userclassentity = new UserClassEntity();
-                        userclassentity.userId = userEntityforId.userId;
-                        userclassentity.classId = classEntity.classId;
 
                 });
+                const className = provUserEntity.class
+                let classEntity = await ClassRepository.findOneBy({ name: className });
+                let userEntityforId = await UserRepository.findOneBy({ email: provUserEntity.email });
+                console.log(classEntity);
+                console.log(userEntityforId);
+                if (!classEntity || !userEntityforId) {
+                    throw new Error("Id not found");
+                }
+
+                const userclassentity = new UserClassEntity();
+                userclassentity.userId = userEntityforId.userId;
+                userclassentity.classId = classEntity.classId;
+
+                await UserclassRepository.save(userclassentity);
                 return res.status(200).json({
                     message: "User registered successfully."
                 });
