@@ -23,5 +23,5 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER || "",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
-    entities: [TeacherEntity, TeacherModulesEntity, UserEntity, UserClassEntity, ClassEntity, ClassModuleEntity, ModuleEntity, UserModuleEntity, ProvisionalUserEntity, ProvisionalUserCodeEntity, VmEntity, UserClassEntity],
+    entities: [TeacherEntity, TeacherModulesEntity, UserEntity, ClassEntity, ClassModuleEntity, ModuleEntity, UserModuleEntity, ProvisionalUserEntity, ProvisionalUserCodeEntity, VmEntity, UserClassEntity],
 })

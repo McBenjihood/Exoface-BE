@@ -1,8 +1,9 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import {createVm, getInstanceTypes, getTemplates, getVmList, startVm, stopVm} from "@/services/VmService.js";
+import {createVm, getInstanceTypes, getTemplates, getVmList, resetVm} from "@/services/VmService.js";
 import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js";
 import {ServiceError} from "@/errors/ServiceError.js";
+import {exoscaleClient} from "@/services/VmService.js";
 
 const router = Router();
 
@@ -99,49 +100,30 @@ router.get("/vms", requireRole("teacher", "admin"), async (req: Request, res: Re
     }
 });
 
-router.put("/:uuid/start", async (req: Request<{ uuid: string }>, res: Response) => {
+router.post("/reset", async (req: Request, res: Response) => {
+    const {id, diskSize, template} = req.body;
+
     try {
-        const { uuid } = req.params;
-
-        if (!uuid || !UUID_REGEX.test(uuid)) {
-            return res.status(400).json({ error: "Ungültiges UUID-Format." });
-        }
-
-        await startVm(uuid, req.user!);
-
+        const op = await resetVm(id, diskSize, template);
         return res.status(200).json({
-            message: "VM wurde erfolgreich gestartet."
+            operationId : op.id,
+            message : "Vm was reset is in progress."
         });
-    } catch (error: any) {
-        if (error instanceof ServiceError) {
-            return res.status(error.status).json({ error: error.message });
-        }
-        console.error("Unhandled error in PUT /api/vms/:uuid/start:", error);
-        return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
+    }catch (error: any){
+        console.error("Unhandled error in POST /api/exoscale/reset", error);
+        return res.status(500).json({ error: "Ein interner Serverfehler beim zurücksetzen der VM ist aufgetreten." });
     }
 });
 
+router.get("/operation-status", async(req: Request, res: Response) =>{
+    const {operationId} = req.body;
+    const op = await exoscaleClient.getOperation({id : operationId});
 
-router.put("/:uuid/stop",async (req: Request<{ uuid: string }>, res: Response) => {
-    try{
-        const { uuid } = req.params;
-
-        if (!uuid || !UUID_REGEX.test(uuid)) {
-            return res.status(400).json({ error: "Ungültiges UUID-Format." });
-        }
-
-        await stopVm(uuid, req.user!);
-
-        return res.status(200).json({
-            message: "VM wurde erfolgreich gestoppt."
-        });
-    }catch(error: any){
-        if (error instanceof ServiceError) {
-            return res.status(error.status).json({ error: error.message });
-        }
-        console.error("Unhandled error in PUT /api/{uuid}/stop:", error);
-        return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
-    }
+    return res.json({
+        state: op.state,
+        message: op.message,
+        reason: op.reason,
+    })
 });
 
 export default router;

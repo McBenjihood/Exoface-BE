@@ -5,17 +5,17 @@ import ClassEntity from "@/models/entities/ClassEntity.js";
 @Entity({name: "UserClassEntity"})
 export default class UserClassEntity {
     @PrimaryColumn({type: "int", name: "userId" })
-    userId!: number;
+    moduleId!: number;
 
     @PrimaryColumn({type: "int", name: "classId" })
     classId!: number;
 
 
-    @ManyToOne(() => UserEntity, { onDelete: "CASCADE" })
+    @ManyToOne(() => UserEntity, (user) => user.userClasses, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId" })
     user!: UserEntity;
 
-    @ManyToOne(() => ClassEntity, { onDelete: "CASCADE" })
+    @ManyToOne(() => ClassEntity, (cls) => cls.classUsers, { onDelete: "CASCADE" })
     @JoinColumn({ name: "classId" })
     class!: ClassEntity;
 }
