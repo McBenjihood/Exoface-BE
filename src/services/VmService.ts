@@ -169,3 +169,27 @@ async function getAndAuthorizeVm(uuid: string, user: UserEntity): Promise<VmEnti
 
     return vm;
 }
+
+export async function startVm(uuid: string, user: UserEntity): Promise<void> {
+
+    await getAndAuthorizeVm(uuid, user);
+
+    try {
+        await exoscaleClient.startInstance({ id: uuid });
+    } catch (error: any) {
+        console.error("Exoscale error starting VM:", error);
+        throw new ServiceError(502, "Fehler beim Starten der VM beim Cloud-Provider.");
+    }
+}
+
+export async function stopVm(uuid: string, user: UserEntity): Promise<void> {
+
+    await getAndAuthorizeVm(uuid, user);
+
+    try {
+        await exoscaleClient.stopInstance({ id: uuid });
+    } catch (error: any) {
+        console.error("Exoscale error starting VM:", error);
+        throw new ServiceError(502, "Fehler beim Starten der VM beim Cloud-Provider.");
+    }
+}

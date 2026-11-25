@@ -21,9 +21,6 @@ export default class UserEntity {
     @Column({ type: "varchar", length: 50 })
     surname!: string;
 
-    @Column({ type: "int", nullable: true, name: "classId" })
-    classId!: number | null;
-
     @Column({ type: "varchar", length: 100, unique: true })
     email!: string;
 
