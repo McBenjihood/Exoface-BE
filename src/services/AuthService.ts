@@ -89,14 +89,15 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
                         await bcrypt.hash(password, 10),
                         provUserEntity.role,
                     );
-                    userEntity.classId = klasse ? klasse.classId : null;
+
                     await transactionalEntityManager.save(userEntity);
                     await transactionalEntityManager.remove(provUserEntity);
 
                     const className = provUserEntity.class
                     let classEntity = await ClassRepository.findOneBy({ name: className });
                     let userEntityforId = await UserRepository.findOneBy({ email: email });
-
+                    console.log(classEntity);
+                    console.log(userEntityforId);
                     if (!classEntity || !userEntityforId) {
                         throw new Error("Id not found");
                     }
