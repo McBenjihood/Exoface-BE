@@ -2,7 +2,7 @@ import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
 import UserEntity from "@/models/entities/UserEntity.js";
 import ClassEntity from "@/models/entities/ClassEntity.js";
 
-@Entity({name: "UserClass"})
+@Entity({name: "UserClassEntity"})
 export default class UserClassEntity {
     @PrimaryColumn({type: "int", name: "userId" })
     moduleId!: number;

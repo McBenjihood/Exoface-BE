@@ -1,8 +1,9 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import {createVm, getInstanceTypes, getTemplates, getVmList} from "@/services/VmService.js";
+import {createVm, getInstanceTypes, getTemplates, getVmList, resetVm} from "@/services/VmService.js";
 import {authenticateJwt, requireRole} from "@/middleware/authMiddleware.js";
 import {ServiceError} from "@/errors/ServiceError.js";
+import {exoscaleClient} from "@/services/VmService.js";
 
 const router = Router();
 
@@ -97,6 +98,32 @@ router.get("/vms", requireRole("teacher", "admin"), async (req: Request, res: Re
         console.error("Unhandled error in GET /api/exoscale/vms:", error);
         return res.status(500).json({ error: "Ein interner Serverfehler ist aufgetreten." });
     }
+});
+
+router.post("/reset", async (req: Request, res: Response) => {
+    const {id, diskSize, template} = req.body;
+
+    try {
+        const op = await resetVm(id, diskSize, template);
+        return res.status(200).json({
+            operationId : op.id,
+            message : "Vm was reset is in progress."
+        });
+    }catch (error: any){
+        console.error("Unhandled error in POST /api/exoscale/reset", error);
+        return res.status(500).json({ error: "Ein interner Serverfehler beim zurücksetzen der VM ist aufgetreten." });
+    }
+});
+
+router.get("/operation-status", async(req: Request, res: Response) =>{
+    const {operationId} = req.body;
+    const op = await exoscaleClient.getOperation({id : operationId});
+
+    return res.json({
+        state: op.state,
+        message: op.message,
+        reason: op.reason,
+    })
 });
 
 export default router;

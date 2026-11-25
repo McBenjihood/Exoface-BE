@@ -1,16 +1,14 @@
 import { AppDataSource } from "@/models/datasource.js";
 import VmEntity from "@/models/entities/VmEntity.js";
 import UserEntity from "@/models/entities/UserEntity.js";
-import {ENDPOINTS, ExoscaleClient} from "@exoscale/sdk";
+import {ENDPOINTS, ExoscaleClient, type TemplateRef} from "@exoscale/sdk";
 import type {CreateVmParams, VmTemplate, InstanceType} from "@/interfaces/VmInterfaces.js";
 import {ServiceError} from "@/errors/ServiceError.js";
 
 const TARGET_ZONE = process.env.EXOSCALE_ZONE || "ch-dk-2";
 
 export const exoscaleClient = new ExoscaleClient({
-    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS["ch-dk-2"],
-    apiKey: process.env.EXOSCALE_API_KEY,
-    apiSecret: process.env.EXOSCALE_API_SECRET,
+    endpoint: process.env.EXOSCALE_API_URL || ENDPOINTS["ch-dk-2"]
 });
 
 export async function createVm({
@@ -110,7 +108,6 @@ export async function getTemplates(): Promise<VmTemplate[]> {
 
 }
 
-
 export async function getVmList() {
     const vmRepository = AppDataSource.getRepository(VmEntity);
     const vms = await vmRepository.find();
@@ -120,4 +117,13 @@ export async function getVmList() {
         name: v.name,
         userId: v.userId
     }));
+}
+
+export async function resetVm(id: string, diskSize: number, template: TemplateRef){
+    return await exoscaleClient.resetInstance({
+        ...(diskSize != null ? { diskSize } : {}),
+        id,
+        ...(template != null ? { template } : {}),
+
+    })
 }
