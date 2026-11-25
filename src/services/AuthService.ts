@@ -1,6 +1,8 @@
 import UserEntity from "@/models/entities/UserEntity.js";
 import ProvisionalUserEntity from "@/models/entities/ProvisionalUserEntity.js";
 import { ProvisionalUserCodeEntity } from '@/models/entities/ProvisionalUserCodeEntity.js';
+import ClassEntity from "@/models/entities/ClassEntity.js";
+import UserClassEntity from "@/models/entities/UserClassEntity.js";
 import { AppDataSource } from "@/models/datasource.js";
 import jwt from "jsonwebtoken";
 import type { Response } from "express";
@@ -12,6 +14,9 @@ import {findOrCreateClass} from "@/services/ClassesService.js";
 const UserRepository = AppDataSource.getRepository(UserEntity);
 const ProvisionalUserCodeRepository = AppDataSource.getRepository(ProvisionalUserCodeEntity);
 const ProvisionalUserRepository = AppDataSource.getRepository(ProvisionalUserEntity);
+const ClassRepository = AppDataSource.getRepository(ClassEntity);
+const UserclassEntity = AppDataSource.getRepository(UserClassEntity);
+
 
 export function createJWT(user: UserEntity) {
     return jwt.sign({
@@ -86,6 +91,17 @@ export async function verifyUserRegister(res: Response, email: string, otp: stri
                     userEntity.classId = klasse ? klasse.classId : null;
                     await transactionalEntityManager.save(userEntity);
                     await transactionalEntityManager.remove(provUserEntity);
+
+                    const className = provUserEntity.class
+                    let classEntity = await ClassRepository.findOneBy({ name: className });
+                    const classId = classEntity?.classId
+                    const userclassentity = new UserClassEntity(
+
+                        
+                    );
+
+
+
                 });
                 return res.status(200).json({
                     message: "User registered successfully."

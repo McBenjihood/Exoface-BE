@@ -1,6 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
 import VmEntity from "@/models/entities/VmEntity.js";
 import UserModuleEntity from "@/models/entities/UserModuleEntity.js";
+import UserClassEntity from "@/models/entities/UserClassEntity.js";
 
 @Entity({ name: "User" })
 export default class UserEntity {
@@ -37,4 +38,7 @@ export default class UserEntity {
 
     @OneToMany(() => UserModuleEntity, (um) => um.user)
     userModules!: UserModuleEntity[];
+
+    @OneToMany(() => UserClassEntity, (uc) => uc.user)
+    userClasses!: UserClassEntity[];
 }
